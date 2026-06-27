@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bushi's Special Clearance 🌸</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff5f8d;
+            --secondary: #fff0f4;
+            --accent: #ffbf69;
+            --text: #2b2d42;
+            --soft: #ffe3e8;
+            --flower-bg: rgba(255, 111, 145, 0.18);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --shadow: rgba(255, 111, 145, 0.25);
+        }
+
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; touch-action: manipulation; }
+
+        body, html {
+            margin: 0; padding: 0; min-height: 100vh; width: 100%;
+            font-family: 'Quicksand', sans-serif;
+            background: radial-gradient(circle at top left, #ffe9f2 0%, #fff0f4 35%, #ffdfec 100%);
+            color: var(--text);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .container {
+            position: relative; z-index: 10;
+            height: 100%; width: 100%;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .card {
+            width: 90%; max-width: 400px;
+            background: var(--card-bg);
+            padding: 26px 20px; border-radius: 32px;
+            box-shadow: 0 18px 40px var(--shadow);
+            text-align: center;
+            border: 1px solid rgba(255, 111, 145, 0.12);
+        }
+
+        .step { display: none; animation: fadeIn 0.4s ease-out; }
+        .step.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+        h1 { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; color: var(--primary); margin-bottom: 15px; }
+        p { font-size: 1rem; line-height: 1.5; color: #666; }
+
+        .btn {
+            background: var(--primary); color: white; border: none;
+            padding: 15px 18px; border-radius: 14px; font-weight: 700;
+            width: 100%; font-size: 1rem; margin-top: 12px; cursor: pointer;
+            min-height: 52px;
+            box-shadow: 0 10px 18px rgba(255, 111, 145, 0.25);
+        }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+
+        .btn, .btn-outline { touch-action: manipulation; }
+
+        .progress-container { width: 100%; background: #eee; border-radius: 10px; height: 10px; margin: 20px 0; overflow: hidden; }
+        .progress-bar { width: 0%; height: 100%; background: var(--primary); transition: width 0.3s; }
+
+        #scratch-container {
+            width: 100%; max-width: 320px; aspect-ratio: 5 / 3; margin: 0 auto;
+            position: relative; background: #fff; border: 2px dashed var(--primary);
+            border-radius: 18px; display: flex; align-items: center;
+            justify-content: center; overflow: hidden;
+        }
+        #scratch-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; touch-action: none; }
+        .secret-msg { padding: 10px; font-weight: bold; color: var(--primary); }
+
+        .game-area {
+            width: 100%; min-height: 220px; max-width: 320px; margin: 0 auto;
+            position: relative; background: linear-gradient(180deg, #fff5f7 0%, #ffe7ef 100%);
+            border-radius: 24px;
+            border: 2px dashed var(--accent); overflow: hidden;
+            box-shadow: inset 0 0 0 1px rgba(255, 111, 145, 0.12);
+        }
+        .game-item {
+            position: absolute; width: 56px; height: 56px; display: flex;
+            align-items: center; justify-content: center; font-size: 2rem;
+            border-radius: 50%; background: var(--flower-bg);
+            box-shadow: 0 10px 20px rgba(255, 111, 145, 0.18);
+            cursor: pointer;
+        }
+
+        #noBtn { position: static; width: auto; transition: 0.1s; z-index: 1000; }
+
+        .flower { position: absolute; font-size: 34px; pointer-events: none; animation: floatFlower 0.6s ease-out forwards; }
+        @keyframes floatFlower { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div id="flower-field"></div>
+
+    <div class="container">
+        <div class="card">
+            <div id="step1" class="step active">
+                <h1>Identity Verification</h1>
+                <p>To access this apology, please answer: What was Bushi doing while I was panic-deleting messages?</p>
+                <button class="btn btn-outline" onclick="wrongAnswer(this)">Working on her future</button>
+                <button class="btn btn-outline" onclick="wrongAnswer(this)">Saving the world</button>
+                <button class="btn btn-outline" onclick="nextStep(2)">Snoring like a chainsaw 😴</button>
+            </div>
+
+            <div id="step2" class="step">
+                <h1>System Processing...</h1>
+                <p id="loadText">Analyzing my level of overthinking...</p>
+                <div class="progress-container">
+                    <div id="pBar" class="progress-bar"></div>
+                </div>
+                <p id="stuckText" style="display:none; color: var(--accent); font-weight: bold;">Error: Brain Overloaded. <br>Tap the bar 10 times to force load.</p>
+                <button id="tapBtn" class="btn" style="display:none;" onclick="handleTaps()">Tap to fix (0/10)</button>
+            </div>
+
+            <div id="step3" class="step">
+                <h1>Scratch to reveal</h1>
+                <p>I put my pride in this box. Use your finger to clean it up.</p>
+                <div id="scratch-container">
+                    <div class="secret-msg">I thought you were ignoring me, but you were just a sleepy princess. My bad! 🤡</div>
+                    <canvas id="scratch-canvas" width="250" height="150"></canvas>
+                </div>
+                <button class="btn" id="finishScratch" style="display:none; margin-top:20px;" onclick="nextStep(4)">I've seen enough</button>
+            </div>
+
+            <div id="step4" class="step">
+                <h1>Catch the apology flowers</h1>
+                <p>Tap the floating flowers before time runs out. Each one is a little sorry that I owe you.</p>
+                <div id="game-area" class="game-area"></div>
+                <p style="margin-top:14px;">Captured: <strong><span id="score">0</span>/5</strong></p>
+                <p id="timerText">Time left: 10s</p>
+                <button class="btn" id="playNext" style="display:none; margin-top:20px;" onclick="nextStep(5)">I got them all!</button>
+            </div>
+
+            <div id="step5" class="step">
+                <h1>Final Verdict</h1>
+                <p>I know I messed up, and I really am sorry. I should have been calmer, kinder, and less dramatic. I care about you, and I never wanted to make you feel like this .</p>
+                <p>If you still want to be mad at me for a little while, I’ll understand. But if you can, I’d really love a chance to make this right.
+                    AB please man jao itna kisi ko nai rulate please. I promise to be better.nai karo ab ase ek chance de do.
+                </p>
+                <div style="height: 150px; position: relative; margin-top: 20px; display: grid; gap: 12px; grid-template-columns: repeat(2, 1fr);">
+                    <button class="btn" style="background: #6b8e85;" onclick="finish()">We're cool 🤝</button>
+                    <button class="btn" id="noBtn" onclick="moveNo()">Nope 😤</button>
+                </div>
+            </div>
+
+            <div id="step6" class="step">
+                <h1>Solid. 🌸</h1>
+                <p>Bushi, check your WhatsApp. I promise to be 15% less dramatic next time.</p>
+                <div style="font-size: 50px; margin: 16px 0;">🌻🌼🌷</div>
+                <button class="btn btn-outline" onclick="location.reload()">Replay my embarrassment</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function nextStep(num) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + num).classList.add('active');
+            if(num === 2) startLoading();
+            if(num === 3) initScratch();
+            if(num === 4) startFlowerChase();
+        }
+
+        function wrongAnswer(btn) {
+            btn.innerText = "Wrong. Try again. 😂";
+            btn.style.borderColor = "var(--accent)";
+        }
+
+        let taps = 0;
+        function startLoading() {
+            let bar = document.getElementById('pBar');
+            let width = 0;
+            let interval = setInterval(() => {
+                if (width >= 99) {
+                    clearInterval(interval);
+                    document.getElementById('stuckText').style.display = 'block';
+                    document.getElementById('tapBtn').style.display = 'block';
+                } else {
+                    width++;
+                    bar.style.width = width + '%';
+                }
+            }, 30);
+        }
+
+        function handleTaps() {
+            taps++;
+            document.getElementById('tapBtn').innerText = `Tap to fix (${taps}/10)`;
+            if(taps >= 10) nextStep(3);
+        }
+
+        function initScratch() {
+            const canvas = document.getElementById('scratch-canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ccc';
+            ctx.fillRect(0, 0, 250, 150);
+            ctx.font = '16px sans-serif';
+            ctx.fillStyle = '#666';
+            ctx.fillText('SCRATCH HERE', 70, 80);
+
+            let isDrawing = false;
+            let cleared = 0;
+
+            function scratch(e) {
+                if (!isDrawing) return;
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX || e.touches[0].clientX) - rect.left;
+                const y = (e.clientY || e.touches[0].clientY) - rect.top;
+                
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath();
+                ctx.arc(x, y, 20, 0, Math.PI * 2);
+                ctx.fill();
+                
+                cleared++;
+                if(cleared > 100) document.getElementById('finishScratch').style.display = 'block';
+            }
+
+            canvas.addEventListener('mousedown', () => isDrawing = true);
+            canvas.addEventListener('touchstart', () => isDrawing = true);
+            canvas.addEventListener('mouseup', () => isDrawing = false);
+            canvas.addEventListener('touchend', () => isDrawing = false);
+            canvas.addEventListener('mousemove', scratch);
+            canvas.addEventListener('touchmove', scratch);
+        }
+
+        function moveNo() {
+            const btn = document.getElementById('noBtn');
+            const x = Math.random() * (window.innerWidth - 120);
+            const y = Math.random() * (window.innerHeight - 120);
+            btn.style.position = 'fixed';
+            btn.style.transition = 'left 160ms ease, top 160ms ease, transform 120ms ease';
+            btn.style.left = x + 'px';
+            btn.style.top = y + 'px';
+            btn.style.transform = 'scale(1.06)';
+            setTimeout(() => { btn.style.transform = 'scale(1)'; }, 180);
+        }
+
+        function startFlowerChase() {
+            document.getElementById('score').innerText = 0;
+            document.getElementById('timerText').innerText = 'Time left: 10s';
+            document.getElementById('playNext').style.display = 'none';
+            const gameArea = document.getElementById('game-area');
+            gameArea.innerHTML = '';
+            let score = 0;
+            let timeLeft = 10;
+            const interval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timerText').innerText = `Time left: ${timeLeft}s`;
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    if (score >= 5) {
+                        document.getElementById('playNext').style.display = 'inline-block';
+                    } else {
+                        document.getElementById('timerText').innerText = 'Oh no! Try again?';
+                        const tryAgain = document.createElement('button');
+                        tryAgain.className = 'btn btn-outline';
+                        tryAgain.style.marginTop = '16px';
+                        tryAgain.innerText = 'Try again';
+                        tryAgain.onclick = () => startFlowerChase();
+                        gameArea.appendChild(tryAgain);
+                    }
+                }
+            }, 1000);
+
+            function addFlower() {
+                const flower = document.createElement('div');
+                flower.className = 'game-item';
+                flower.innerText = '🌸';
+                const maxX = gameArea.clientWidth - 56;
+                const maxY = gameArea.clientHeight - 56;
+                flower.style.left = Math.random() * maxX + 'px';
+                flower.style.top = Math.random() * maxY + 'px';
+                flower.addEventListener('click', () => {
+                    if (score >= 5 || timeLeft <= 0) return;
+                    score++;
+                    document.getElementById('score').innerText = score;
+                    flower.remove();
+                    if (score >= 5) {
+                        clearInterval(interval);
+                        document.getElementById('timerText').innerText = 'Nice! You caught them all!';
+                        document.getElementById('playNext').style.display = 'inline-block';
+                    }
+                });
+                gameArea.appendChild(flower);
+                setTimeout(() => flower.remove(), 2600);
+            }
+
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => addFlower(), i * 700);
+            }
+            const spawnLoop = setInterval(() => {
+                if (timeLeft <= 0 || score >= 5) {
+                    clearInterval(spawnLoop);
+                    return;
+                }
+                addFlower();
+            }, 900);
+        }
+
+        function finish() {
+            nextStep(6);
+            const field = document.getElementById('flower-field');
+            const flowers = ['🌸', '🌺', '🌷', '🌻', '🌼', '🌿'];
+            for(let i=0; i<50; i++) {
+                setTimeout(() => {
+                    const f = document.createElement('div');
+                    f.className = 'flower';
+                    f.innerText = flowers[Math.floor(Math.random() * flowers.length)];
+                    f.style.left = Math.random() * 100 + 'vw';
+                    f.style.top = Math.random() * 100 + 'vh';
+                    field.appendChild(f);
+                }, i * 100);
+            }
+        }
+    </script>
+</body>
+</html>
